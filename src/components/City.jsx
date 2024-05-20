@@ -18,7 +18,7 @@ function City() {
   const navigate = useNavigate();
   useEffect(function(){
   getCity(id)
-  },[id]
+  },[id,getCity]
   );
 
  
