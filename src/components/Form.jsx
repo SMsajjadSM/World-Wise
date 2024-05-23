@@ -8,6 +8,7 @@ import { useUrlPosition } from "../hooks/useUrlPosition";
 import Message from "./Message";
 import Spinner from "./Spinner";
 import DatePicker from "react-datepicker";
+import { useCities } from "../contexts/CitiesContext";
 
 const base_url = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
@@ -21,7 +22,7 @@ export function convertToEmoji(countryCode) {
 
 function Form() {
   const [isLoadingGeoCoding, setIsLoadingGeoCoding] = useState(false);
-  const [mapLat, mapLng] = useUrlPosition();
+  const [lat, lng] = useUrlPosition();
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
   const [date, setDate] = useState(new Date());
@@ -29,18 +30,17 @@ function Form() {
   const [emoji, setEmoji] = useState("");
   const [errorGeo, setErrorGeu] = useState("");
   const navigate = useNavigate();
-  console.log(mapLat, mapLng, date, setDate);
-  console.log(country, setCountry, isLoadingGeoCoding);
+  const { createCity, loading } = useCities();
 
   useEffect(
     function () {
-      if (!mapLat && !mapLng) return;
+      if (!lat && !lng) return;
       async function fetchCityData() {
         try {
           setErrorGeu("");
           setIsLoadingGeoCoding(true);
           const res = await fetch(
-            `${base_url}?latitude=${mapLat}&longitude=${mapLng}`
+            `${base_url}?latitude=${lat}&longitude=${lng}`
           );
           const data = await res.json();
           if (!data.countryCode)
@@ -58,9 +58,9 @@ function Form() {
       }
       fetchCityData();
     },
-    [mapLat, mapLng]
+    [lat, lng]
   );
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (!cityName || !date) return;
@@ -71,15 +71,20 @@ function Form() {
       emoji,
       date,
       notes,
-      position: { mapLat, mapLng },
+      position: { lat, lng },
     };
+    await createCity(newCity);
+    navigate("/app/cities");
   }
-  if (!mapLat && !mapLng)
+  if (!lat && !lng)
     return <Message message="Start by clicking somewhere on the map" />;
   if (isLoadingGeoCoding) return <Spinner />;
   if (errorGeo) return <Message message={errorGeo} />;
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      className={`${styles.form}  ${loading ? styles.loading : ""}`}
+      onSubmit={handleSubmit}
+    >
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
