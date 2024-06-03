@@ -30,4 +30,3 @@ support me by giving me a ⭐
 
 [SMsajjadSM](https://github.com/SMsajjadSM/React-Quiz)
 
->>>>>>> 55cb4e2babe5472a5a67bc89c21083623386b055
