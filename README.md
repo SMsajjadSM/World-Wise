@@ -1,5 +1,5 @@
 
-# React-Quiz website
+# World-wise website
 Test your React Skills
 
 [Demo of React-Quiz](https://smsajjadsm.github.io/React-Quiz/)
